@@ -44,36 +44,48 @@ public class CardUI
 
 public class JackpotsBase : MonoBehaviour 
 {
-    private List<Card> m_CardDeck = new List<Card>(52);
+    private const int m_NumCards = 52;
+
+    private List<Card> m_CardDeck = new List<Card>(m_NumCards);
 
 
     protected virtual void Start()
     {
-        int signs = (int)eCardSign.Max;
-        for (int i = 0; i < signs; i++)
+        if (m_CardDeck.Count != m_NumCards)
         {
-            for (int j = 0; j < (m_CardDeck.Capacity / signs); j++)
+            m_CardDeck.Clear();
+            int signs = (int)eCardSign.Max;
+            for (int i = 0; i < signs; i++)
             {
-                string card = "";
-                int score = j;
-                if (j == 0)
+                for (int j = 0; j < (m_CardDeck.Capacity / signs); j++)
                 {
-                    card = "A";
-                    score = (m_CardDeck.Capacity / signs);
-                }
-                else if ((j % 10) == 0)
-                    card = "J";
-                else if ((j % 11) == 0)
-                    card = "Q";
-                else if ((j % 12) == 0)
-                    card = "K";
-                else
-                    card = "" + (j + 1);
+                    string card = "";
+                    int score = j;
+                    if (j == 0)
+                    {
+                        card = "A";
+                        score = (m_CardDeck.Capacity / signs);
+                    }
+                    else if ((j % 10) == 0)
+                        card = "J";
+                    else if ((j % 11) == 0)
+                        card = "Q";
+                    else if ((j % 12) == 0)
+                        card = "K";
+                    else
+                        card = "" + (j + 1);
 
-                m_CardDeck.Add(new Card(card, ((eCardSign)i), score));
+                    m_CardDeck.Add(new Card(card, ((eCardSign)i), score));
+                }
             }
         }
+
         m_CardDeck.Shuffle();
+    }
+
+    protected virtual void EndGame()
+    {
+
     }
 
     protected List<Card> GetCards(int count)

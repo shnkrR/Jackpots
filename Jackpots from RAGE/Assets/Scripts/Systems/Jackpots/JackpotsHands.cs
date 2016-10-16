@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 
 
-public enum Hand
+public enum eHand
 {
     Nothing,
-    OnePair,
-    TwoPairs,
-    ThreeKind,
+    One_Pair,
+    Two_Pairs,
+    Three_Kind,
     Straight,
     Flush,
-    FullHouse,
-    FourKind
+    Full_House,
+    Four_of_a_Kind
 }
 
 
@@ -25,6 +25,8 @@ public class JackpotsHands
     private Card m_HighCard;
     public Card _HighCard { get { return m_HighCard; } }
 
+    private List<Card> m_EvaluateList;
+
 
     public JackpotsHands()
     {
@@ -34,38 +36,42 @@ public class JackpotsHands
         m_DiamondSum = 0;
 
         m_HighCard = null;
+
+        m_EvaluateList = new List<Card>();
     }
 
-    public Hand EvaluateHand(List<Card> a_Cards)
+    public eHand EvaluateHand(List<Card> a_Cards)
     {
-        if (a_Cards.Count != 5)
+        m_EvaluateList.Clear();
+        m_EvaluateList.AddRange(a_Cards);
+
+        if (m_EvaluateList.Count != 5)
         {
             Debug.LogError("An Invalid amount of cards has been sent to evaluate");
-            return Hand.Nothing;
+            return eHand.Nothing;
         }
 
-        a_Cards.Sort(SortHandByScore);
-        m_HighCard = a_Cards[a_Cards.Count - 1];
+        m_EvaluateList.Sort(SortHandByScore);
+        m_HighCard = m_EvaluateList[m_EvaluateList.Count - 1];
 
-        Hand resultHand = Hand.Nothing;
+        eHand resultHand = eHand.Nothing;
 
-        CalculateSuitSums(a_Cards);
-        if (FourOfKind(a_Cards))
-            return Hand.FourKind;
-        else if (FullHouse(a_Cards))
-            return Hand.FullHouse;
-        else if (Flush(a_Cards))
-            return Hand.Flush;
-        else if (Straight(a_Cards))
-            return Hand.Straight;
-        else if (ThreeOfKind(a_Cards))
-            return Hand.ThreeKind;
-        else if (TwoPairs(a_Cards))
-            return Hand.TwoPairs;
-        else if (OnePair(a_Cards))
-            return Hand.OnePair;
-
-        ResetSuitScores();  
+        CalculateSuitSums(m_EvaluateList);
+        if (FourOfKind(m_EvaluateList))
+            return eHand.Four_of_a_Kind;
+        else if (FullHouse(m_EvaluateList))
+            return eHand.Full_House;
+        else if (Flush(m_EvaluateList))
+            return eHand.Flush;
+        else if (Straight(m_EvaluateList))
+            return eHand.Straight;
+        else if (ThreeOfKind(m_EvaluateList))
+            return eHand.Three_Kind;
+        else if (TwoPairs(m_EvaluateList))
+            return eHand.Two_Pairs;
+        else if (OnePair(m_EvaluateList))
+            return eHand.One_Pair;
+ 
         return resultHand;
     }
 
@@ -77,6 +83,7 @@ public class JackpotsHands
 
     private void CalculateSuitSums(List<Card> a_Cards)
     {
+        ResetSuitScores(); 
         for (int i = 0; i < a_Cards.Count; i++)
         {
             switch(a_Cards[i]._Sign)

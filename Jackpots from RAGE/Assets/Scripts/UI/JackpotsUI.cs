@@ -2,53 +2,24 @@
 using UnityEngine.UI;
 using System.Collections;
 
-
 public class JackpotsUI : MonoBehaviour 
 {
-    [SerializeField]
-    private Image _CardSign;
+    public GameObject _RestartButton;
+    public GameObject _DrawButton;
 
-    [SerializeField]
-    private Text _TopLeftCardText;
-    [SerializeField]
-    private Text _BottomRightCardText;
-
-    [SerializeField]
-    private CardUI[] _SignSprites;
+    public Text _ResultHand;
 
 
-    private void Start()
+    public void Start()
     {
-
+        _RestartButton.SetActive(false);
+        _DrawButton.SetActive(true);
     }
 
-    public void InitCard(Card a_Card)
+    public void UpdateResult(eHand a_ResultHand, bool a_AllowRestart = false)
     {
-        Sprite sprite = _SignSprites[0]._CardSignSprite;
-        Color color = Color.black;
-
-        for (int i = 0; i < _SignSprites.Length; i++)
-        {
-            if (_SignSprites[i]._CardSign == a_Card._Sign)
-            {
-                sprite = _SignSprites[i]._CardSignSprite;
-                color = _SignSprites[i]._CardTextColor;
-                break;
-            }
-        }
-
-        _CardSign.sprite = sprite;
-        _TopLeftCardText.text = _BottomRightCardText.text = a_Card._Number;
-        _TopLeftCardText.color = _BottomRightCardText.color = color;
-    }
-
-    public bool IsHeld()
-    {
-        return gameObject.GetComponent<Toggle>().isOn;
-    }
-
-    public void ResetHold()
-    {
-        gameObject.GetComponent<Toggle>().isOn = false;
+        _RestartButton.SetActive(a_AllowRestart);
+        _DrawButton.SetActive(!a_AllowRestart);
+        _ResultHand.text = ((a_AllowRestart) ? "Final" : "Current") + " Hand: " + a_ResultHand.ToString().Replace("_", " ");
     }
 }
