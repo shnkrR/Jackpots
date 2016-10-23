@@ -9,6 +9,8 @@ public class Jackpots : JackpotsBase
 
     public JackpotsUI _UI;
 
+    public JackpotsRewards[] _Rewards = new JackpotsRewards[(int)eHand.Max];
+
     private List<JackpotsCardUI> m_JackpotsUI = new List<JackpotsCardUI>();
 
     private JackpotsHands m_HandEvaluator;
@@ -21,6 +23,8 @@ public class Jackpots : JackpotsBase
     private int m_CurrTurn = 1;
 
     private List<Card> m_ActiveCards = new List<Card>();
+
+    private int m_CurrentBet;
 
 
     protected override void Start()
@@ -73,7 +77,30 @@ public class Jackpots : JackpotsBase
     {
         base.EndGame();
 
-        _UI.UpdateResult(m_HandEvaluator.EvaluateHand(m_ActiveCards), true);
+        eHand resultHand = m_HandEvaluator.EvaluateHand(m_ActiveCards);
+        float betMultiplier = 0;
+        float winnings = 0;
+
+        for (int i = 0; i < _Rewards.Length; i++)
+        {
+            if (_Rewards[i]._ResultHand == resultHand)
+            {
+                betMultiplier = _Rewards[i]._BetMultiplier;
+                break;
+            }
+        }
+        winnings = (betMultiplier * m_CurrentBet);
+
+        _UI.UpdateResult(resultHand, winnings, true);
+        m_Wallet += winnings;
+        PlayerPrefs.SetFloat(m_WalletPrefsKey, m_Wallet);
+    }
+
+    protected override void UpdateWallet(float a_Amount)
+    {
+        base.UpdateWallet(a_Amount);
+
+        _UI.SetWallet(m_Wallet);
     }
 
     public void OnDrawPressed()
@@ -103,5 +130,21 @@ public class Jackpots : JackpotsBase
     public void OnRestart()
     {
         Reset();
+    }
+
+    public void OnCashOut()
+    {
+        m_CurrTurn = m_MaxTurns + 1;
+        EndGame();
+    }
+
+    public void OnApplyBet()
+    {
+        if (_UI._CurrentBetAmount <= m_Wallet)
+        {
+            m_CurrentBet = _UI._CurrentBetAmount;
+            m_Wallet -= m_CurrentBet;
+            _UI.ShowGame();
+        }
     }
 }

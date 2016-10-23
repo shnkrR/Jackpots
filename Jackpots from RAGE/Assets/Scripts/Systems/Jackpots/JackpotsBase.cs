@@ -48,6 +48,11 @@ public class JackpotsBase : MonoBehaviour
 
     private List<Card> m_CardDeck = new List<Card>(m_NumCards);
 
+    protected const string m_WalletPrefsKey = "PREF_WALLET";
+
+    protected float m_Wallet { get { return m_privateWallet; } set { UpdateWallet(value); } }
+    private float m_privateWallet;
+
 
     protected virtual void Start()
     {
@@ -81,11 +86,18 @@ public class JackpotsBase : MonoBehaviour
         }
 
         m_CardDeck.Shuffle();
+        m_Wallet = PlayerPrefs.GetFloat(m_WalletPrefsKey, 100);
     }
 
     protected virtual void EndGame()
     {
 
+    }
+
+    protected virtual void UpdateWallet(float a_Amount)
+    {
+        m_privateWallet = a_Amount;
+        PlayerPrefs.SetFloat(m_WalletPrefsKey, m_privateWallet);
     }
 
     protected List<Card> GetCards(int count)

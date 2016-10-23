@@ -4,14 +4,15 @@ using System.Collections.Generic;
 
 public enum eHand
 {
-    Nothing,
+    Nothing = 0,
     One_Pair,
     Two_Pairs,
-    Three_Kind,
+    Three_of_a_Kind,
     Straight,
     Flush,
     Full_House,
-    Four_of_a_Kind
+    Four_of_a_Kind,
+    Max,
 }
 
 
@@ -66,7 +67,7 @@ public class JackpotsHands
         else if (Straight(m_EvaluateList))
             return eHand.Straight;
         else if (ThreeOfKind(m_EvaluateList))
-            return eHand.Three_Kind;
+            return eHand.Three_of_a_Kind;
         else if (TwoPairs(m_EvaluateList))
             return eHand.Two_Pairs;
         else if (OnePair(m_EvaluateList))
